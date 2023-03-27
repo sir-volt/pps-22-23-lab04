@@ -6,8 +6,11 @@ trait Item:
   def tags: List[String]
 
 object Item:
-  def apply(code: Int, name: String, tags: List[String] = List.empty): Item =
-    ItemImpl(code, name, tags)
+  def apply(code: Int, name: String, tags: String*): Item =
+    var tagsList: List[String] = Nil()
+    for el <- tags do
+      tagsList = append(tagsList, Cons(el, Nil()))
+    ItemImpl(code, name, tagsList)
   private case class ItemImpl(override val code: Int, override val name: String,
                               override val tags: List[String]) extends Item
 
@@ -69,15 +72,17 @@ object Warehouse:
 @main def mainWarehouse(): Unit =
   val warehouse = Warehouse()
 
-  val dellXps = Item(33, "Dell XPS 15", cons("notebook", empty))
-  val dellInspiron = Item(34, "Dell Inspiron 13", cons("notebook", empty))
-  val xiaomiMoped = Item(35, "Xiaomi S1", cons("moped", cons("mobility", empty)))
+  //cons("notebook", empty)
+  val dellXps = Item(33, "Dell XPS 15", "notebook")
+  val dellInspiron = Item(34, "Dell Inspiron 13", "notebook")
+  val xiaomiMoped = Item(35, "Xiaomi S1", "moped", "mobility")
 
   println(warehouse.contains(dellXps.code))// false
   warehouse.store(dellXps) // side effect, add dell xps to the warehouse
   println(warehouse.contains(dellXps.code)) // true
   warehouse.store(dellInspiron) // side effect, add dell inspiron to the warehouse
   warehouse.store(xiaomiMoped) // side effect, add xiaomi moped to the warehouse
+  println(warehouse.retrieve(dellInspiron.code))
   println(warehouse.searchItems("mobility")) // List(xiaomiMoped)
   println(warehouse.searchItems("notebook")) // List(dellXps, dellInspiron)
   println(warehouse.retrieve(11)) // None
