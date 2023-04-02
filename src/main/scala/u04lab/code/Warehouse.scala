@@ -14,6 +14,8 @@ object Item:
   private case class ItemImpl(override val code: Int, override val name: String,
                               override val tags: List[String]) extends Item
 
+  def unapply(i: Item): scala.Option[(Int, String, List[String])] = Some((i.code, i.name, i.tags))
+
 /**
  * A warehouse is a place where items are stored.
  */

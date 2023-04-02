@@ -3,6 +3,7 @@ package u04lab.code
 import scala.annotation.tailrec
 import u04lab.code.Option.*
 import u04lab.code.Option
+import u04lab.code.Item.*
 // A generic linkedlist
 enum List[E]:
   case Cons(head: E, tail: List[E])
@@ -10,6 +11,11 @@ enum List[E]:
 
 // a companion object (i.e., module) for List
 object List:
+
+  def apply[E](head: E, tail: E*): List[E] = (head, tail) match
+    case (h, t) if t.tail.length >= 1 => Cons(h, apply(t.head, t.tail: _*))
+    case (h, t) => Cons(h, Cons(t.head, Nil()))
+
   def empty[E]: List[E] = Nil()
 
   def cons[E](h: E, t: List[E]): List[E] = Cons(h, t)
@@ -64,4 +70,21 @@ object List:
     case _ => Nil()
 
   def take[A](list: List[A], n: Int): List[A] = reverse(drop(reverse(list), length(list) - n))
+
+  def sameTag(list: List[Item], tag: String): Boolean =
+    length(filter(list)(el => contains(unapply(el).get._3, tag))) == length(list)
+
 end List
+
+@main def checkFactory(): Unit =
+  val factoryList = List("giacomo", "francesco", "andrea", "giovanni")
+  println(factoryList)
+
+  /* tentativo di test per esercizio facoltativo 2
+  val dellXps = Item(33, "Dell XPS 15", "notebook")
+  val dellInspiron = Item(34, "Dell Inspiron 13", "notebook")
+  val xiaomiMoped = Item(35, "Xiaomi S1", "moped", "mobility")
+  val items = List(dellXps, dellInspiron, xiaomiMoped)
+  items match
+    case List.sameTag(items, "notebook") => print("every item has this tag")
+    case _ => print("some items don't have this tag")*/
